@@ -11,7 +11,6 @@ type SlotProps = {
 const Slot: React.FC<SlotProps> = ({ name }) => {
   let slotContent = useRecoilValue(selectSlotData(name));
   let block = useRecoilValue(selectBlock(slotContent));
-  console.log("slot content is ", slotContent);
   return (
     <DropZone id={name}>
       {({ isActive, canDrop }) => {

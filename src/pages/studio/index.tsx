@@ -9,6 +9,7 @@ import clsx from "clsx";
 import DropZone from "../../components/dnd/DropZone";
 import Block from "../../components/studio/Block";
 import Slot from "../../components/studio/Slot";
+import price from "../../assets/images/price.png"
 import {
   RecoilRoot,
   useRecoilState,
@@ -24,8 +25,8 @@ interface PriceProps {
 }
 const Price: React.FC<PriceProps> = ({ price, unit, top }) => {
   return (
-    <div className="relative z-0 mt-8 ">
-      <div className="bg-yellow-400 absolute -top-9 left-4 py-2 w-full z-[-4]">
+    <div className="relative  mt-8 ">
+      <div className="bg-yellow-400 absolute -top-9 left-4 py-2 w-full">
         <h1 className="text-black text-xl font-bold text-center">Superpris!</h1>
       </div>
       <div className=" bg-red-700 px-4 pt-2 z-3">
@@ -80,7 +81,7 @@ const Template = () => {
                 </ul>
               </div>
             </div>
-            <Price price={64.9} top="ca 2.2kg" unit="kg" />
+           
           </div>
         </div>
         <div className="flex flex-col flex-1 items-center">
@@ -105,10 +106,30 @@ const StudioPage: NextPage = () => {
     <DndProvider backend={HTML5Backend}>
       <RecoilRoot>
         <Studio />
+        
       </RecoilRoot>
     </DndProvider>
   );
 };
+
+
+const StudioOverlay = ()=>
+{
+
+  return (<div className="absolute w-full h-full bg-[#969696d9]  z-100 flex items-center justify-center">
+    <div className="flex flex-col bg-white  w-3/6 p-8">
+      <h1 className="text-2xl font-bold">select overlay</h1>
+      <div className="grid grid-cols-2 flex-1 gap-4">
+        <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">a</div>
+        <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">b</div>
+        <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">c</div>
+        <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">d</div>
+      </div> 
+    </div>
+    
+    </div>)
+
+}
 
 export default StudioPage;
 
@@ -118,10 +139,13 @@ const initialBlocks: [string, { name: string; imageSrc: string }][] = [
     {
       name: "test00",
       imageSrc:
-        "https://images.pexels.com/photos/5967746/pexels-photo-5967746.jpeg",
+        price.src,
     },
   ],
 ];
+
+
+
 const Studio = () => {
   const [blocks, setBlocks] = useRecoilState(blocksState);
   useEffect(() => {
@@ -132,7 +156,8 @@ const Studio = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen bg-blue-50 flex flex-col">
+    <div className="w-screen h-screen bg-blue-50 flex flex-col relative z-0">
+      <StudioOverlay />
       <div className="w-full bg-gray-800 text-white p-4">
         <h1 className="text-2xl font-bold">Studio</h1>
       </div>
