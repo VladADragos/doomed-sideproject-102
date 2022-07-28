@@ -9,6 +9,16 @@ const slotsState = atom<Map<string, string>>({
 });
 
 
+const pagesState = atom<string[]>({
+    key: 'pagesState', // unique ID (with respect to other atoms/selectors)
+    default: ["1", "2"], // default value (aka initial value)
+});
+
+const aspectRatioState = atom<string>({
+    key: 'aspectRatio', // unique ID (with respect to other atoms/selectors)
+    default: "210/297", // default value (aka initial value)
+});
+
 
 const blocksState = atom<Map<string, { name: string, imageSrc: string }>>({
     key: "blocksState",
@@ -42,4 +52,4 @@ const selectSlotData = selectorFamily<undefined | string, string>({
 //         return slots
 //     }
 // })
-export { slotsState, selectSlotData, blocksState, selectBlock };
+export { slotsState, selectSlotData, blocksState, selectBlock, aspectRatioState, pagesState };

@@ -9,15 +9,20 @@ import clsx from "clsx";
 import DropZone from "../../components/dnd/DropZone";
 import Block from "../../components/studio/Block";
 import Slot from "../../components/studio/Slot";
-import price from "../../assets/images/price.png"
+import price from "../../assets/images/price.png";
 import {
   RecoilRoot,
   useRecoilState,
   useRecoilValue,
   useSetRecoilState,
 } from "recoil";
-import { blocksState, slotsState } from "../../state/studio";
-import { useEffect } from "react";
+import {
+  aspectRatioState,
+  blocksState,
+  pagesState,
+  slotsState,
+} from "../../state/studio";
+import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 interface PriceProps {
   price: number;
   unit: string;
@@ -59,10 +64,10 @@ const MainHeading: React.FC<MainHeadingProps> = ({
   );
 };
 const Template = () => {
-  let x = useRecoilValue(slotsState);
-  console.log(x.values());
+  let aspectRatio = useRecoilValue(aspectRatioState);
+
   return (
-    <div className="bg-white h-full w-full flex ">
+    <div className={clsx("bg-white flex", `aspect-[${aspectRatio}]`)}>
       <div className="flex flex-1">
         <div className="flex flex-col bg-gray-700 w-3/12 ml-12 items-center text-white">
           <div className="mb-12 flex flex-col items-center">
@@ -81,7 +86,6 @@ const Template = () => {
                 </ul>
               </div>
             </div>
-           
           </div>
         </div>
         <div className="flex flex-col flex-1 items-center">
@@ -106,30 +110,34 @@ const StudioPage: NextPage = () => {
     <DndProvider backend={HTML5Backend}>
       <RecoilRoot>
         <Studio />
-        
       </RecoilRoot>
     </DndProvider>
   );
 };
 
-
-const StudioOverlay = ()=>
-{
-
-  return (<div className="absolute w-full h-full bg-[#969696d9]  z-100 flex items-center justify-center">
-    <div className="flex flex-col bg-white  w-3/6 p-8">
-      <h1 className="text-2xl font-bold">select overlay</h1>
-      <div className="grid grid-cols-2 flex-1 gap-4">
-        <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">a</div>
-        <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">b</div>
-        <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">c</div>
-        <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">d</div>
-      </div> 
+const StudioOverlay = () => {
+  return (
+    <div className="absolute w-full h-full bg-[#969696d9]  z-100 flex items-center justify-center">
+      <div className="flex flex-col bg-white  w-3/6 p-8">
+        <h1 className="text-2xl font-bold">select overlay</h1>
+        <div className="grid grid-cols-2 flex-1 gap-4">
+          <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">
+            a
+          </div>
+          <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">
+            b
+          </div>
+          <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">
+            c
+          </div>
+          <div className="w-full h-full bg-gray-300 p-4 hover:bg-gray-200">
+            d
+          </div>
+        </div>
+      </div>
     </div>
-    
-    </div>)
-
-}
+  );
+};
 
 export default StudioPage;
 
@@ -138,16 +146,14 @@ const initialBlocks: [string, { name: string; imageSrc: string }][] = [
     "test00",
     {
       name: "test00",
-      imageSrc:
-        price.src,
+      imageSrc: price.src,
     },
   ],
 ];
 
-
-
 const Studio = () => {
   const [blocks, setBlocks] = useRecoilState(blocksState);
+  const [pages, setPages] = useRecoilState(pagesState);
   useEffect(() => {
     setBlocks(() => {
       const map = new Map(initialBlocks);
@@ -155,26 +161,120 @@ const Studio = () => {
     });
   }, []);
 
+  const [selectedPage, setSelectedPage] = useState<number | null>(null);
+
   return (
-    <div className="w-screen h-screen bg-blue-50 flex flex-col relative z-0">
-      <StudioOverlay />
-      <div className="w-full bg-gray-800 text-white p-4">
-        <h1 className="text-2xl font-bold">Studio</h1>
-      </div>
-      <div className="flex  bg-red-500 flex-1">
-        <div className="bg-gray-300 w-3/12 text-white">
-          <div className="grid grid-cols-2 p-4 gap-4">
+    <div className="w-screen max-h-screen h-screen bg-blue-50 flex flex-col relative z-0 overflow-auto ">
+      {/* <StudioOverlay /> */}
+      <Navbar />
+      <div
+        id="main"
+        className="grid grid-cols-5  bg-blue-500 w-full h-full max-h-full overflow-hidden"
+      >
+        <div
+          id="left panel"
+          className="bg-white border-r-4 border-gray-200 border-solid   text-black col-span-1"
+        >
+          <div className="grid grid-cols-2 p-4 gap-4 ">
             {[...blocks.values()].map(({ name, imageSrc }) => {
               return <Block key={name} name={name} imageSrc={imageSrc}></Block>;
             })}
           </div>
         </div>
-        <div className="bg-blue-200 flex-1">
+        <div
+          id="canvas"
+          className="flex-1 flex flex-col items-center bg-white  max-h-full overflow-y-scroll col-span-3"
+        >
           {" "}
-          <Template></Template>
+          <div className="w-3/6 flex flex-col gap-8 mt-8 flex-1 flex-grow-0">
+            {pages.map((s, i) => {
+              return (
+                <div
+                  key={i}
+                  onClick={() => setSelectedPage(i)}
+                  className={clsx(
+                    "hover:border-teal-300  border-white border-2",
+                    { "border-teal-300": i === selectedPage }
+                  )}
+                >
+                  <p className="text-md font-bold mb-2">page {i}</p>
+                  <div className="aspect-[210/297]  bg-gray-100 flex-shrink-0">
+                    empty page...
+                  </div>
+                </div>
+              );
+            })}
+            <button
+              className="bg-gray-300 font-bold text-xl p-2  rounded-md w-full hover:bg-gray-200"
+              onClick={() => {
+                setPages((currentPages) => {
+                  return [...currentPages, "anotha one"];
+                });
+              }}
+            >
+              add page
+            </button>
+          </div>
         </div>
-        <div className="bg-gray-300 w-3/12 text-white"> right panel</div>
+        <RightPanel selectedPage={selectedPage} />
       </div>
+    </div>
+  );
+};
+
+const Navbar = ({}) => {
+  const [aspectRatio, setAspectRatio] = useRecoilState(aspectRatioState);
+
+  function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
+    setAspectRatio(event.target.value);
+  }
+  return (
+    <div className="w-full bg-gray-800 text-white p-4 flex items-center gap-4 ">
+      <h1 className="text-2xl font-bold">Studio</h1>
+      <div className="flex items-center gap-2">
+        <p className="font-bold">aspect ratio: </p>
+        <input
+          type="text"
+          className="rounded-md p-1 text-black"
+          onChange={handleOnChange}
+          value={aspectRatio}
+        />
+      </div>
+    </div>
+  );
+};
+
+interface RightPanelProps {
+  selectedPage: number | null;
+}
+const RightPanel: React.FC<RightPanelProps> = ({ selectedPage }) => {
+  return (
+    <div className="bg-white border-l-4 border-gray-200 border-solid   text-black col-span-1">
+      {" "}
+      <h1 className="font-bold text-center p-4 text-lg border-b-2 border-gray-200 ">
+        right panel
+      </h1>
+      {selectedPage !== null && (
+        <div className="px-4">
+          <h1 className="font-bold text-center p-4 text-lg  ">
+            selected page {selectedPage.toString()}
+          </h1>
+          <div className="grid grid-cols-2 gap-4">
+            <button className="p-2 bg-gray-100 hover:bg-gray-50">
+              layout 1
+            </button>
+            <button className="p-2 bg-gray-100 hover:bg-gray-50">
+              layout 2
+            </button>
+            <button className="p-2 bg-gray-100 hover:bg-gray-50">
+              layout 3
+            </button>
+            <button className="p-2 bg-gray-100 hover:bg-gray-50">
+              layout 4
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

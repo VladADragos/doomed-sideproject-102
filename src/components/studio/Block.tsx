@@ -37,4 +37,6 @@ const Block: React.FC<BlockProps> = ({ name, imageSrc }) => {
   );
 };
 
+
+
 export default Block;
