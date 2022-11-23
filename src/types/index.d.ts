@@ -1,17 +1,20 @@
-interface Layout {
+import { typeNextPage } from 'next';
+interface TLayout {
     style: string;
-    blocks: Block[];
+    blocks: TBlock[];
 
 }
 
 
 
-interface Block {
+interface TBlock {
     style: string;
     image?: { src: string, style: string };
     text?: { content: string, style: string }[];
 }
 
-interface Page {
-    layout: Layout;
+interface TPage {
+    layout?: string;
+    name: string;
+    pageNumber: number;
 }

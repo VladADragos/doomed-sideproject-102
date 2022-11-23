@@ -1,6 +1,7 @@
 import {
     atom, selector, selectorFamily,
 } from "recoil";
+import { TPage } from "../../types";
 
 
 const slotsState = atom<Map<string, string>>({
@@ -8,10 +9,12 @@ const slotsState = atom<Map<string, string>>({
     default: new Map(), // default value (aka initial value)
 });
 
+const pagesStateDefault: [string, TPage][] = [["1", { layout: "first", name: "1", pageNumber: 0 }]]
 
-const pagesState = atom<string[]>({
+
+const pagesState = atom<Map<string, TPage>>({
     key: 'pagesState', // unique ID (with respect to other atoms/selectors)
-    default: ["1", "2"], // default value (aka initial value)
+    default: new Map(), // default value (aka initial value)
 });
 
 const aspectRatioState = atom<string>({
@@ -52,4 +55,11 @@ const selectSlotData = selectorFamily<undefined | string, string>({
 //         return slots
 //     }
 // })
-export { slotsState, selectSlotData, blocksState, selectBlock, aspectRatioState, pagesState };
+
+const layouts: string[] = [
+    "layout 0",
+    "layout 1",
+    "layout 2",
+    "layout 3",
+]
+export { slotsState, selectSlotData, blocksState, selectBlock, aspectRatioState, pagesState, layouts };

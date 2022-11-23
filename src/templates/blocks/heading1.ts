@@ -1,4 +1,4 @@
-const heading1 :Block = {
+const heading1 = {
     style: "",
     text: [{
         content: "heading 1",
